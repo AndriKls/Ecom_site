@@ -1,0 +1,25 @@
+.card-img-top {
+    height: 200px; /* Set a fixed height */
+    width: 100%; /* Make the width fill the card */
+    object-fit: cover; /* Ensures the image scales and crops to fit */
+}
+
+.card-text {
+    color: green; 
+    font-weight: 800;
+    min-height: 30px;
+}
+
+.card-title {
+    font-weight: 900;
+    min-height: 50px;
+}
+
+.card {
+    min-height: 350px; /* Adjust to the desired height */
+}
+
+.btn-custom-width {
+    width: 120px; /* Määra nuppude laius */
+    text-align: center; /* Keskenda tekst */
+}
