@@ -16,3 +16,18 @@ class Products(models.Model):
     class Meta:
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
+
+
+
+class Order(models.Model):
+    items = models.CharField(max_length=1000)
+    name = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    address = models.CharField(max_length=1000)
+    city = models.CharField(max_length=200)
+    county = models.CharField(max_length=200)
+    zipcode = models.CharField(max_length=20)
+    total = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f'Tellimus nr.{self.id}, {self.name}'

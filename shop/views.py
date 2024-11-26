@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Products
+from .models import Products, Order
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
@@ -27,3 +27,18 @@ class ProductDetail(DetailView):
     template_name ='shop/product_detail.html'
     context_object_name = 'product'
 
+
+def checkout(request):
+    if request.method == 'POST':
+        items = request.POST.get('items', '')
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        address = request.POST.get('address', '')
+        city = request.POST.get('city', '')
+        county = request.POST.get('county', '')
+        zipcode = request.POST.get('zipcode', '')
+        total = request.POST.get('total', '')
+
+        order = Order(items=items, name=name, email=email, address=address, city=city, county=county, zipcode=zipcode, total=total)
+        order.save()
+    return render(request, 'shop/checkout.html')
