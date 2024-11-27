@@ -24,3 +24,9 @@
     text-align: center; /* Keskenda tekst */
 }
 
+.productimage {
+    height: 200px; /* Fixed height may cause distortion */
+    width: 100%; /* Image fills the width of its container */
+    object-fit: cover; /* Crops image to fit container */
+}
+

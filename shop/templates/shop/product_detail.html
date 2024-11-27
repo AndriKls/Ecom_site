@@ -1,42 +1,139 @@
 {%extends "shop/base.html"%}
 
 {% block pagetitle %}Toote Info{% endblock pagetitle %}
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock scripts %}
 
 {% block body %}
-
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-12">
-                    <img src="{{product.image}}" >
-            </div>
+        <div class="col-md-12">
+            {% include "shop/includes/navbar.html" %}
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="container mt-5">
         <div class="row">
-            <div class="col-md-12">
-                {{product.title}}
+            <!-- Product Image Section -->
+            <div class="col-md-6">
+                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid">
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                {{product.price}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                {{product.discount_price}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                {{product.description}}
+    
+            <!-- Product Details Section -->
+            <div class="col-md-6">
+                <!-- Hidden Product ID -->
+                <input type="hidden" id="product-id" value="{{ product.id }}">
+    
+                <!-- Product Title -->
+                <h1 id="product-name">{{ product.title }}</h1>
+    
+                <!-- Price Section -->
+                {% if product.discount_price %}
+                    <h4>
+                        <span class="text-muted"><del>€<span id="original-price">{{ product.price }}</span></del></span>
+                        <span class="text-danger">€<span id="product-price">{{ product.discount_price }}</span></span>
+                    </h4>
+                {% else %}
+                    <h4>€<span id="product-price">{{ product.price }}</span></h4>
+                {% endif %}
+    
+                <!-- Description -->
+                <p>{{ product.description }}</p>
+    
+                <!-- Add to Cart Button -->
+                <button id="add-to-cart-button" class="btn btn-primary">Lisa ostukorvi</button>
+                <a href="/" class="btn btn-warning">Tagasi</a>
             </div>
         </div>
     </div>
-</div>
+    
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        console.log("Script is running on the item details page");
+
+        // Initialize the cart
+        let cart = {};
+        if (localStorage.getItem('cart') !== null) {
+            cart = JSON.parse(localStorage.getItem('cart'));
+        }
+
+        // Update the cart indicator in the navbar
+        updateCartIndicator();
+
+        // Display the cart contents in the navbar popover
+        displayCart(cart);
+
+        // Event listener for "Add to Cart" button
+        $('#add-to-cart-button').on('click', function () {
+            console.log("The 'Add to Cart' button was clicked on the item details page");
+
+            const item_id = $('#product-id').val();
+            const name = $('#product-name').text();
+            const price = parseFloat($('#product-price').text());
+
+            if (!item_id || !name || isNaN(price)) {
+                console.error("Product information is missing.");
+                return;
+            }
+
+            if (cart[item_id] !== undefined) {
+                cart[item_id].quantity += 1;
+            } else {
+                cart[item_id] = {
+                    quantity: 1,
+                    name: name,
+                    unitPrice: price
+                };
+            }
+
+            console.log(cart);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartIndicator();
+            displayCart(cart);
+
+            // Provide feedback to the user (e.g., show a toast or alert)
+            alert(`${name} lisatud ostukorvi!`);
+        });
+
+        function updateCartIndicator() {
+            $('#cart').text(`Ostukorv(${Object.keys(cart).length})`);
+        }
+
+        function displayCart(cart) {
+            let cartString = '<h5>See on sinu ostukorv.</h5>';
+            let cartIndex = 1;
+
+            for (const x in cart) {
+                const item = cart[x];
+                const totalPrice = (item.quantity * item.unitPrice).toFixed(2);
+                cartString += `${cartIndex}. ${item.name} - Kogus: ${item.quantity} - Hind: €${totalPrice}<br>`;
+                cartIndex += 1;
+            }
+
+            if (cartIndex === 1) {
+                cartString += '<p>Ostukorv on tühi.</p>';
+            } else {
+                cartString += "<a href='/checkout' id='checkout-link' class='btn btn-warning'>Vormista tellimus</a>";
+            }
+
+            $('#cart').attr('data-content', cartString);
+
+            // Reinitialize popover
+            $('#cart').popover('dispose').popover({
+                html: true,
+                content: cartString
+            });
+        }
+    });
+</script>
+
+
+
 
 
 {% endblock body %}
